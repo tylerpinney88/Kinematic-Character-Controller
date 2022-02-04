@@ -5,6 +5,7 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     [SerializeField] MouseLook mouseLook;
+    [SerializeField] CharacterController characterController;
 
     Vector2 mouseInput;
 
@@ -20,6 +21,8 @@ public class InputManager : MonoBehaviour
 
         movement.MouseX.performed += ctx => mouseInput.x = ctx.ReadValue<float>();
         movement.MouseY.performed += ctx => mouseInput.y = ctx.ReadValue<float>();
+
+        movement.Jump.started += ctx => RegisterJump();
     }
 
     private void Update()
@@ -32,4 +35,11 @@ public class InputManager : MonoBehaviour
         movement.Enable();
 
     }
+
+    private void RegisterJump()
+    {
+        characterController.RecieveJump();
+    }
+
+
 }

@@ -33,6 +33,8 @@ public class CharacterController : MonoBehaviour
     PlayerInputs.MovementActions movement;
     Vector2 move;
 
+    bool jumpPressed;
+
     #endregion
 
     private void Awake()
@@ -44,9 +46,8 @@ public class CharacterController : MonoBehaviour
 
     private void Update()
     {
-        //Gravity();
-        //MouseLook();
-        //Jump();
+        Gravity();
+        Jump();
         SimpleMove();
         FinalMovement();
     }
@@ -120,6 +121,79 @@ public class CharacterController : MonoBehaviour
         return hit;
     }
 
+    private void Gravity()
+    {
+        Vector3 boxPos = new Vector3(transform.position.x, transform.position.y - transform.localScale.y / 2 - (Vector3.one / 40).y, transform.position.z);
+        Vector3 boxSize = Vector3.one;
+        grounded = Physics.CheckBox(boxPos, boxSize / 2);
+        if (grounded)
+        {
+            currentGrav = 0;
+        }
+        else
+        {
+            currentGrav = -gravity;
+        }
+
+        if (grounded)
+        {
+            Ray ray = new Ray(transform.position, Vector3.down * 2);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, disculdePlayer))
+            {
+                if (hit.distance <= 2)
+                {
+                    Debug.DrawRay(ray.origin, ray.direction * 20, Color.green, 0.2f);
+                    Vector3 needed = new Vector3(transform.position.x, hit.point.y + transform.localScale.y, transform.position.z);
+                    transform.position = needed;
+                }
+                else if (hit.distance > 2)
+                {
+                    grounded = true;
+                    currentGrav = -gravity * 0.5f;
+                }
+            }
+        }
+    }
+
+    private void Jump()
+    {
+        if (grounded)
+        {
+            if (jumpHeight > 0)
+            {
+                jumpHeight = 0;
+            }
+            if (jumpPressed)
+            {
+                jumpPressed = false;
+
+                jumpHeight += jumpForce;
+            }
+        }
+
+        else
+        {
+            if (jumpHeight > 0)
+            {
+                jumpHeight -= (jumpHeight * Time.deltaTime);
+            }
+            else
+            {
+                jumpHeight = 0;
+            }
+        }
+    }
+
+    public void RecieveJump()
+    {
+        if (grounded)
+        {
+            jumpPressed = true;
+        }
+    }
+
 
     private void OnEnable()
     {
@@ -128,8 +202,23 @@ public class CharacterController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        Vector3 boxPos = new Vector3(transform.position.x, transform.position.y - transform.localScale.y / 2 - (Vector3.one / 40).y, transform.position.z);
+        Vector3 boxSize = Vector3.one;
+        if (!grounded)
+        {
+            Gizmos.color = Color.red;
+        }
+
+        else
+        {
+            Gizmos.color = Color.green;
+        }
+
+        Gizmos.DrawWireCube(boxPos, boxSize);
+
         Gizmos.color = Color.yellow;
         Vector3 l = transform.TransformPoint(sensorLocal);
         Gizmos.DrawWireSphere(l, 0.2f);
     }
+
 }
