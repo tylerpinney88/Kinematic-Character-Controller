@@ -6,7 +6,7 @@ public class MouseLook : MonoBehaviour
 {
     public float sensitivityX = 12f;
     public float sensitivityY = 8f;
-    float mouseX, mouseY;
+    Vector2 mouseDelta;
 
     [SerializeField] GameObject headJoint;
     [SerializeField] float minClamp = -65f;
@@ -17,15 +17,21 @@ public class MouseLook : MonoBehaviour
 
     public bool mouseLocked;
 
+    [SerializeField] [Range(0.0f, 0.05f)] float mouseSmoothTime = 0.03f;
+    Vector2 currentMouseDelta = Vector2.zero;
+    Vector2 currentMouseDeltaVelocity = Vector2.zero;
+
     private void Update()
     {       
-        if (mouseLocked)
+        if (!mouseLocked)
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            
-            rotationY += mouseX * sensitivityY * 100 * Time.deltaTime;
-            rotationX += mouseY * sensitivityX * 100 * Time.deltaTime;
+
+            currentMouseDelta = Vector2.SmoothDamp(currentMouseDelta, mouseDelta, ref currentMouseDeltaVelocity, mouseSmoothTime);
+
+            rotationY += currentMouseDelta.x * sensitivityY * 100 * Time.deltaTime;
+            rotationX += currentMouseDelta.y * sensitivityX * 100 * Time.deltaTime;
 
             rotationX = Mathf.Clamp(rotationX, minClamp, maxClamp);
 
@@ -42,8 +48,7 @@ public class MouseLook : MonoBehaviour
 
     public void RecieveInput(Vector2 mouseInput, bool mouseLock)
     {
-        mouseX = mouseInput.x;
-        mouseY = mouseInput.y;
+        mouseDelta = mouseInput;
         mouseLocked = mouseLock;
     }
 
