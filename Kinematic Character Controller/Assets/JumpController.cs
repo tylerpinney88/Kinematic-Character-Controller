@@ -7,10 +7,13 @@ public class JumpController : MonoBehaviour
     CharacterController controller;
     CharacterMovement characterMove;
 
-    [SerializeField] bool jumpActivated = false;
-    [SerializeField] float jumpHeight = 3;
+    bool jumpActivated = false;
+    [SerializeField] float jumpTime = 2;
+    float time = 0;
 
-    bool isJumping;
+    [HideInInspector] public bool isJumping;
+
+    [SerializeField] AnimationCurve jumpCurve;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,13 +25,26 @@ public class JumpController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (jumpActivated)
+        {
+            isJumping = true;
+        }
 
+        if (isJumping)
+        {
+            time += Time.deltaTime;
+        }
+
+        if (time >= jumpTime)
+        {
+            isJumping = false;
+            jumpActivated = false;
+            time = 0;
+        }
     }
 
     public void RecieveInput(bool jumpState)
     {
-        Debug.Log(jumpState);
-
         if (controller.isGrounded && jumpState == true)
         {
             jumpActivated = true;
@@ -42,19 +58,20 @@ public class JumpController : MonoBehaviour
 
     public void ApplyJump()
     {
-        if (jumpActivated)
+        if (isJumping)
         {
-            characterMove.moveWithJump.y += jumpHeight;
+            characterMove.moveWithJump.y = (jumpCurve.Evaluate(time) * 6);
+            if (time >= 0.5 && controller.isGrounded)
+            {
+                isJumping = false;
+                jumpActivated = false;
+                time = 0;
+            }
         }
 
-        else if (controller.isGrounded)
+        else
         {
             characterMove.moveWithJump.y = 0;
-        }
-
-        else if (characterMove.moveWithJump.y >= 0)
-        {
-            characterMove.moveWithJump.y -= Time.deltaTime * 1000;
         }
     }
 }

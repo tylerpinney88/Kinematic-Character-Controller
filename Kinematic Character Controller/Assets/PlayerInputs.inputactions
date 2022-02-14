@@ -30,6 +30,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Crouch",
+                    "type": "Button",
+                    "id": "24f724b8-bc57-4ea8-872f-3191d5ba82aa",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "MouseX",
                     "type": "PassThrough",
                     "id": "945d843e-0f17-4e4e-b1df-17cc43e28995",
@@ -143,6 +151,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "92450bc4-6015-42a3-9193-7b87916217af",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Crouch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

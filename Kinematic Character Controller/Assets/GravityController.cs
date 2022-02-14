@@ -9,8 +9,6 @@ public class GravityController : MonoBehaviour
 
     [SerializeField] float Gravity;
     [SerializeField] float groundedGrav = -2.5f;
-    float currentGrav;
-    Vector3 lastMove;
     // Start is called before the first frame update
     void Start()
     {

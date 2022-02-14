@@ -43,6 +43,14 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
+                    ""name"": ""Crouch"",
+                    ""type"": ""Button"",
+                    ""id"": ""24f724b8-bc57-4ea8-872f-3191d5ba82aa"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
                     ""name"": ""MouseX"",
                     ""type"": ""PassThrough"",
                     ""id"": ""945d843e-0f17-4e4e-b1df-17cc43e28995"",
@@ -158,6 +166,17 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""92450bc4-6015-42a3-9193-7b87916217af"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -169,6 +188,7 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
         m_Movement_Move = m_Movement.FindAction("Move", throwIfNotFound: true);
         m_Movement_Jump = m_Movement.FindAction("Jump", throwIfNotFound: true);
         m_Movement_Sprint = m_Movement.FindAction("Sprint", throwIfNotFound: true);
+        m_Movement_Crouch = m_Movement.FindAction("Crouch", throwIfNotFound: true);
         m_Movement_MouseX = m_Movement.FindAction("MouseX", throwIfNotFound: true);
         m_Movement_MouseY = m_Movement.FindAction("MouseY", throwIfNotFound: true);
     }
@@ -223,6 +243,7 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
     private readonly InputAction m_Movement_Move;
     private readonly InputAction m_Movement_Jump;
     private readonly InputAction m_Movement_Sprint;
+    private readonly InputAction m_Movement_Crouch;
     private readonly InputAction m_Movement_MouseX;
     private readonly InputAction m_Movement_MouseY;
     public struct MovementActions
@@ -232,6 +253,7 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
         public InputAction @Move => m_Wrapper.m_Movement_Move;
         public InputAction @Jump => m_Wrapper.m_Movement_Jump;
         public InputAction @Sprint => m_Wrapper.m_Movement_Sprint;
+        public InputAction @Crouch => m_Wrapper.m_Movement_Crouch;
         public InputAction @MouseX => m_Wrapper.m_Movement_MouseX;
         public InputAction @MouseY => m_Wrapper.m_Movement_MouseY;
         public InputActionMap Get() { return m_Wrapper.m_Movement; }
@@ -252,6 +274,9 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                 @Sprint.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnSprint;
                 @Sprint.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnSprint;
                 @Sprint.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnSprint;
+                @Crouch.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnCrouch;
+                @Crouch.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnCrouch;
+                @Crouch.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnCrouch;
                 @MouseX.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnMouseX;
                 @MouseX.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnMouseX;
                 @MouseX.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnMouseX;
@@ -271,6 +296,9 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                 @Sprint.started += instance.OnSprint;
                 @Sprint.performed += instance.OnSprint;
                 @Sprint.canceled += instance.OnSprint;
+                @Crouch.started += instance.OnCrouch;
+                @Crouch.performed += instance.OnCrouch;
+                @Crouch.canceled += instance.OnCrouch;
                 @MouseX.started += instance.OnMouseX;
                 @MouseX.performed += instance.OnMouseX;
                 @MouseX.canceled += instance.OnMouseX;
@@ -286,6 +314,7 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+        void OnCrouch(InputAction.CallbackContext context);
         void OnMouseX(InputAction.CallbackContext context);
         void OnMouseY(InputAction.CallbackContext context);
     }

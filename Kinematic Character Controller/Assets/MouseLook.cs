@@ -8,7 +8,7 @@ public class MouseLook : MonoBehaviour
     public float sensitivityY = 8f;
     Vector2 mouseDelta;
 
-    [SerializeField] GameObject headJoint;
+    public GameObject headJoint;
     [SerializeField] float minClamp = -65f;
     [SerializeField] float maxClamp = 65f;
 

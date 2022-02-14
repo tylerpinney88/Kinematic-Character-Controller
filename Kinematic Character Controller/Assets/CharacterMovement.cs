@@ -9,9 +9,12 @@ public class CharacterMovement : MonoBehaviour
     CharacterController controller = null;
     GravityController gravityCon = null;
     JumpController jumpCon = null;
+    MouseLook mouselook = null;
+
 
     [SerializeField] float walkSpeed = 5f;
     [SerializeField] float runSpeed = 10f;
+    [SerializeField] float crouchSpeed = 3f;
 
 
     [SerializeField] [Range(0.0f, 0.5f)] float moveSmoothTime = 0.3f;
@@ -21,13 +24,11 @@ public class CharacterMovement : MonoBehaviour
     float currentSpeed;
 
     float isSprinting;
+    float isCrouching;
+    [SerializeField] bool canCrouch;
+    bool canUncrouch;
 
     public float terminalVelocity;
-
-    float gravityDown;
-
-    bool isJumping = false;
-
 
     [SerializeField] bool useGravity = false;
     [SerializeField] bool useJump = false;
@@ -37,11 +38,13 @@ public class CharacterMovement : MonoBehaviour
     Vector3 finalMove = Vector3.zero;
     [HideInInspector] public Vector3 moveWithGrav = Vector3.zero;
     [HideInInspector] public Vector3 moveWithJump = Vector3.zero;
+
+    [SerializeField] LayerMask discludePlayer;
     // Start is called before the first frame update
     void Start()
     {
         controller = GetComponent<CharacterController>();
-
+        mouselook = GetComponent<MouseLook>();
         currentSpeed = walkSpeed;
 
         if (useGravity)
@@ -57,9 +60,7 @@ public class CharacterMovement : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        SpeedUpdater(isSprinting);
-        
+    {   
         Vector2 targetDir = new Vector2(movementDir.x, movementDir.y);
         targetDir.Normalize();
 
@@ -83,12 +84,21 @@ public class CharacterMovement : MonoBehaviour
 
 
         controller.Move(finalMove * Time.deltaTime);
+
+        CrouchUpdater();
+        UncrouchUpdater();
+        SpeedUpdater(isSprinting, isCrouching);
     }
 
 
-    void SpeedUpdater(float sprinting)
+    void SpeedUpdater(float sprinting, float crouching)
     {
-        if (sprinting == 1)
+        if (crouching == 1 && canCrouch)
+        {
+            currentSpeed = crouchSpeed;
+        }
+        
+        else if (sprinting == 1)
         {
             currentSpeed = runSpeed;
         }
@@ -100,10 +110,44 @@ public class CharacterMovement : MonoBehaviour
     }
 
 
-    public void RecieveInput(Vector2 movementDirection, float sprintState)
+    void CrouchUpdater()
+    {
+        if (finalMove.y >= -4 && finalMove.y <= -2.4 && isCrouching == 1 && !jumpCon.isJumping)
+        {
+            canCrouch = true;
+            controller.height = 1.4f;
+            mouselook.headJoint.transform.localPosition = new Vector3(0,1.4f,0);
+        }
+
+        else if(canUncrouch)
+        {
+            canCrouch = false;
+            controller.height = 1.8f;
+            mouselook.headJoint.transform.localPosition = new Vector3(0, 1.8f, 0);
+        }
+    }
+
+    void UncrouchUpdater()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.up, out hit, 2f, discludePlayer))
+        {
+            Debug.Log(hit.transform.gameObject.name);
+            canUncrouch = false;
+        }
+
+        else
+        {
+            canUncrouch = true;
+        }
+
+    }
+
+    public void RecieveInput(Vector2 movementDirection, float sprintState, float crouchState)
     {
         movementDir = movementDirection;
         isSprinting = sprintState;
+        isCrouching = crouchState;
     }
 }
 

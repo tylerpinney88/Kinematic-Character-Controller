@@ -32,7 +32,7 @@ public class InputManager : MonoBehaviour
     private void Update()
     {
         mouseLook.RecieveInput(mouseInput, mouseLocked);
-        characterMove.RecieveInput(movement.Move.ReadValue<Vector2>(), movement.Sprint.ReadValue<float>());
+        characterMove.RecieveInput(movement.Move.ReadValue<Vector2>(), movement.Sprint.ReadValue<float>(), movement.Crouch.ReadValue<float>());
     }
 
     void onJump(InputAction.CallbackContext context)
